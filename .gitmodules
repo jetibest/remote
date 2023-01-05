@@ -1,0 +1,3 @@
+[submodule "nodejs-easywebserver"]
+	path = nodejs-easywebserver
+	url = https://github.com/jetibest/nodejs-easywebserver
