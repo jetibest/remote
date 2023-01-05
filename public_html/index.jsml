@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Remote</title>
+</head>
+<body>
+	<script src="jsmpeg.ts-demuxer.js"></script>
+	<script src="h264-canvas.js"></script>
+	<script src="h264-decoder.js"></script>
+	<script src="h264-player.js"></script>
+	<script src="remote.js"></script>
+</body>
+</html>

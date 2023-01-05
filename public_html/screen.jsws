@@ -1,0 +1,53 @@
+const net = require('net');
+
+module.exports = async function(websocket, request)
+{
+	// run ffmpeg to grab screen on request (but run it only once)
+	// ffmpeg -y -f v4l2 -framerate 30 -input_format yuyv422 -video_size 640x480 -use_wallclock_as_timestamps 1 -i /dev/video2 -c:v rawvideo -r 30 -f rawvideo pipe:1 | ffplay -framerate 30 -video_size 640x480 -pixel_format yuyv422 -f rawvideo pipe:0 2>/dev/null
+	
+	//websocket.binaryType = 'arraybuffer';
+	
+	var screensocket_closed = false;
+	var websocket_closed = false;
+	
+	var screengrabber = this._easywebserver.screengrabber;
+	
+	var screensocket = net.createConnection({
+		path: screengrabber.path
+	});
+	screensocket.on('data', function(chunk)
+	{
+		// console.log('[screen.jsws]: Writing chunk: ' + chunk.length + ' bytes, starting with: ', chunk.slice(0, 16));
+		websocket.send(chunk);
+	});
+	screensocket.on('close', function()
+	{
+		screensocket_closed = true;
+		
+		if(!websocket_closed)
+		{
+			websocket.close();
+		}
+	});
+	
+	websocket.on('open', function()
+	{
+		console.log('Websocket opened');
+	});
+	websocket.on('message', function(data)
+	{
+		// any message should be forwarded
+		// screensocket.write(data);
+	});
+	websocket.on('close', function()
+	{
+		console.log('Websocket disconnected');
+		
+		websocket_closed = true;
+		
+		if(!screensocket_closed)
+		{
+			screensocket.destroy();
+		}
+	});
+};
